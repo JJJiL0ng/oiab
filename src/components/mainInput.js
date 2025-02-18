@@ -52,9 +52,17 @@ const SocialMediaMatching = () => {
         <div className="text-center space-y-3">
           <h1 className="text-2xl font-bold text-slate-800 flex items-center justify-center gap-2">
             <Sparkles className="text-blue-500" size={24} />
-            Smart Match
+            OiAB
           </h1>
           
+          {/* Free matching banner */}
+          <div className="bg-green-50 border border-green-200 p-2 rounded-lg mb-4">
+            <p className="text-green-700 font-medium text-sm flex items-center justify-center gap-2">
+              <Sparkles className="text-green-500" size={16} />
+              First Match Free Event - Limited Time!
+            </p>
+          </div>
+
           <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
             <div className="grid grid-cols-1 gap-3">
               <div className="flex items-center gap-2 text-sm text-slate-700 bg-slate-50 p-2.5 rounded-lg">

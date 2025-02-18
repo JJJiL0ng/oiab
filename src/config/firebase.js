@@ -1,3 +1,5 @@
+'use client';
+
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 
@@ -17,18 +19,18 @@ console.log('Firebase Config:', {
   authDomain: firebaseConfig.authDomain
 });
 
+// Firebase 초기화를 한 번만 수행
+let app;
 let db;
 
-try {
-  if (!firebaseConfig.projectId) {
-    throw new Error('Firebase projectId is undefined. Check your environment variables.');
+if (typeof window !== 'undefined') {  // 클라이언트 사이드에서만 실행
+  try {
+    app = initializeApp(firebaseConfig);
+    db = getFirestore(app);
+    console.log('Firebase 초기화 성공');
+  } catch (error) {
+    console.error('Firebase 초기화 오류:', error);
   }
-  const app = initializeApp(firebaseConfig);
-  db = getFirestore(app);
-  console.log('Firebase 초기화 성공');
-} catch (error) {
-  console.error('Firebase 초기화 오류:', error);
-  throw error;
 }
 
 export { db };
