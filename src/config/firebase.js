@@ -11,9 +11,18 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
+// 환경 변수 확인을 위한 디버깅
+console.log('Firebase Config:', {
+  projectId: firebaseConfig.projectId,
+  authDomain: firebaseConfig.authDomain
+});
+
 let db;
 
 try {
+  if (!firebaseConfig.projectId) {
+    throw new Error('Firebase projectId is undefined. Check your environment variables.');
+  }
   const app = initializeApp(firebaseConfig);
   db = getFirestore(app);
   console.log('Firebase 초기화 성공');
