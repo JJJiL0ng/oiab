@@ -1,8 +1,7 @@
 'use client'
 import React, { useState } from 'react';
 import { Loader2, MessageSquare, Sparkles, Send, ArrowRight, CheckCircle, Instagram, Camera } from 'lucide-react';
-import { getFirestore, collection, addDoc } from 'firebase/firestore';
-import { initializeApp } from 'firebase/app';
+import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 
 const SocialMediaMatching = () => {
@@ -19,11 +18,13 @@ const SocialMediaMatching = () => {
 
     try {
       // Firestore에 데이터 저장
-      await addDoc(collection(db, "social_media_users"), {
+      const docRef = await addDoc(collection(db, "social_media_users"), {
         username: username,
         platform: platform,
-        timestamp: new Date(),
+        timestamp: new Date().toISOString(),
       });
+
+      console.log("Document written with ID: ", docRef.id);
 
       await new Promise(resolve => setTimeout(resolve, 3000));
 
@@ -38,7 +39,7 @@ const SocialMediaMatching = () => {
       setMatchResult(fakeResult);
     } catch (error) {
       console.error("Error adding document: ", error);
-      // 에러 처리를 위한 상태 추가 가능
+      alert("데이터 저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
     } finally {
       setIsAnalyzing(false);
     }
