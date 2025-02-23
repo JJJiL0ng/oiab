@@ -1,208 +1,136 @@
 'use client'
 import React, { useState } from 'react';
-import { Loader2, MessageSquare, Sparkles, Send, ArrowRight, CheckCircle, Instagram, Camera } from 'lucide-react';
+import { Calendar, Users, Bell, BookOpen, Clock, Sparkles, ArrowRight, CheckCircle, School } from 'lucide-react';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
+import { useRouter } from 'next/navigation';
 
-const SocialMediaMatching = () => {
-  const [username, setUsername] = useState('');
-  const [platform, setPlatform] = useState('');
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [matchResult, setMatchResult] = useState(null);
+const UnivBoard = () => {
+  const router = useRouter();
+  const [storeClicked, setStoreClicked] = useState('');
 
-  const simulateAnalysis = async () => {
-    if (!username || !platform) return;
-    
-    setIsAnalyzing(true);
-    setMatchResult(null);
-
+  const handleStoreClick = async (store) => {
     try {
-      // Firestore에 데이터 저장
-      const docRef = await addDoc(collection(db, "social_media_users"), {
-        username: username,
-        platform: platform,
-        timestamp: new Date().toISOString(),
+      // 파이어베이스에 클릭 이벤트 기록
+      await addDoc(collection(db, "store_clicks"), {
+        store_type: store,
+        clicked_at: new Date().toISOString(),
+        user_timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
       });
-
-      console.log("Document written with ID: ", docRef.id);
-
-      await new Promise(resolve => setTimeout(resolve, 3000));
-
-      const fakeResult = {
-        steps: [
-          'Quick questionnaire sent to your DM',
-          'AI analyzes your social patterns',
-          'Connect with your ideal match'
-        ]
-      };
-
-      setMatchResult(fakeResult);
+      
+      setStoreClicked(store);
+      setTimeout(() => {
+        router.push('/sorry');
+      }, 1500);
     } catch (error) {
-      console.error("Error adding document: ", error);
-      alert("데이터 저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
-    } finally {
-      setIsAnalyzing(false);
+      console.error("스토어 클릭 기록 중 오류 발생:", error);
+      // 에러가 발생해도 sorry 페이지로 이동
+      router.push('/sorry');
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white">
       <div className="max-w-md mx-auto px-4 py-6 space-y-6">
-        {/* Header Section */}
+        {/* 헤더 섹션 */}
         <div className="text-center space-y-3">
-          <h1 className="text-2xl font-bold text-slate-800 flex items-center justify-center gap-2">
-            <Sparkles className="text-blue-500" size={24} />
-            OiAB
+          <h1 className="text-3xl font-bold text-purple-800 flex items-center justify-center gap-2">
+            <School className="text-purple-600" size={32} />
+            UnivBoard
           </h1>
           
-          {/* Free matching banner */}
-          <div className="bg-green-50 border border-green-200 p-2 rounded-lg mb-4">
-            <p className="text-green-700 font-medium text-sm flex items-center justify-center gap-2">
-              <Sparkles className="text-green-500" size={16} />
-              First Match Free Event - Limited Time!
+          {/* 시간표 마법사 배너 */}
+          <div className="bg-gradient-to-r from-purple-100 to-indigo-100 p-4 rounded-xl shadow-sm">
+            <h2 className="text-xl font-semibold text-purple-900 mb-2">
+              Create Your Perfect Timetable
+            </h2>
+            <p className="text-purple-700 text-sm">
+              Smart AI-powered timetable wizard helps you build the best schedule
             </p>
           </div>
 
-          <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+          {/* 주요 기능 */}
+          <div className="bg-white p-4 rounded-xl shadow-sm border border-purple-100">
             <div className="grid grid-cols-1 gap-3">
-              <div className="flex items-center gap-2 text-sm text-slate-700 bg-slate-50 p-2.5 rounded-lg">
-                <MessageSquare size={18} className="text-blue-500" />
-                <span>No App Required - Everything in Your DMs</span>
+              <div className="flex items-center gap-2 text-sm text-slate-700 bg-purple-50 p-3 rounded-lg">
+                <Calendar size={18} className="text-purple-500" />
+                <span>AI Timetable Optimization</span>
               </div>
-              <div className="flex items-center gap-2 text-sm text-slate-700 bg-slate-50 p-2.5 rounded-lg">
-                <Sparkles size={18} className="text-blue-500" />
-                <span>Advanced AI Matching Algorithm </span>
+              <div className="flex items-center gap-2 text-sm text-slate-700 bg-purple-50 p-3 rounded-lg">
+                <Users size={18} className="text-purple-500" />
+                <span>Connect with Your Classmates</span>
               </div>
-              <div className="flex items-center gap-2 text-sm text-slate-700 bg-slate-50 p-2.5 rounded-lg">
-                <CheckCircle size={18} className="text-blue-500" />
-                <span>5-Minute Quick Chat Assessment</span>
+              <div className="flex items-center gap-2 text-sm text-slate-700 bg-purple-50 p-3 rounded-lg">
+                <Bell size={18} className="text-purple-500" />
+                <span>Real-time Campus Updates</span>
               </div>
-              <div className="flex items-center gap-2 text-sm text-slate-700 bg-slate-50 p-2.5 rounded-lg">
-                <Camera size={18} className="text-blue-500" />
-                <span>Profile Verification for Safe Matching</span>
+              <div className="flex items-center gap-2 text-sm text-slate-700 bg-purple-50 p-3 rounded-lg">
+                <BookOpen size={18} className="text-purple-500" />
+                <span>Course Reviews & Materials</span>
               </div>
-              <div className="flex items-center gap-2 text-sm text-slate-700 bg-slate-50 p-2.5 rounded-lg">
-                <Send size={18} className="text-blue-500" />
-                <span>Instant Match Connection via DM</span>
+              <div className="flex items-center gap-2 text-sm text-slate-700 bg-purple-50 p-3 rounded-lg">
+                <Clock size={18} className="text-purple-500" />
+                <span>Exam Schedule Tracker</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Platform Selection */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-700">Select your platform</label>
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              onClick={() => setPlatform('instagram')}
-              className={`p-3 rounded-lg border ${
-                platform === 'instagram'
-                  ? 'border-blue-500 bg-blue-50 text-blue-700'
-                  : 'border-slate-200 hover:border-slate-300 text-slate-600'
-              } transition-all flex items-center justify-center gap-2`}
+        {/* 하단 정보 */}
+        <div className="text-center space-y-4">
+          {/* 다운로드 문구 */}
+          <div className="space-y-2">
+            <h3 className="text-xl font-semibold text-purple-800">
+              Download UnivBoard Now
+            </h3>
+            <p className="text-sm text-slate-600">
+              Get started with your smart university life
+            </p>
+          </div>
+
+          {/* 앱 설치 버튼 */}
+          <div className="flex justify-center gap-4">
+            <button 
+              onClick={() => handleStoreClick('ios')}
+              className="h-12 transition-transform hover:scale-105"
             >
-              <Instagram size={20} />
-              <span className="font-medium">Instagram</span>
-              {platform === 'instagram' && (
-                <CheckCircle size={16} className="text-blue-500" />
-              )}
+              <img 
+                src="/app-store-badge.png" 
+                alt="Download on App Store" 
+                className="h-full"
+              />
             </button>
-            
-            <button
-              onClick={() => setPlatform('tiktok')}
-              className={`p-3 rounded-lg border ${
-                platform === 'tiktok'
-                  ? 'border-blue-500 bg-blue-50 text-blue-700'
-                  : 'border-slate-200 hover:border-slate-300 text-slate-600'
-              } transition-all flex items-center justify-center gap-2`}
+            <button 
+              onClick={() => handleStoreClick('android')}
+              className="h-12 transition-transform hover:scale-105"
             >
-              <Camera size={20} />
-              <span className="font-medium">TikTok</span>
-              {platform === 'tiktok' && (
-                <CheckCircle size={16} className="text-blue-500" />
-              )}
+              <img 
+                src="/google-play-badge.png" 
+                alt="Get it on Google Play" 
+                className="h-full"
+              />
             </button>
           </div>
-          {!platform && (
-            <p className="text-sm text-slate-500 text-center">
-              Please select a platform to continue
+          
+          {storeClicked && (
+            <p className="text-sm text-green-600 animate-fade-in">
+              <CheckCircle className="inline-block mr-1" size={16} />
+              Thanks for your interest! Downloading will start shortly.
             </p>
           )}
-        </div>
 
-        {/* Username Input */}
-        <div className="space-y-3">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Enter your username"
-              className="w-full p-3.5 rounded-lg border border-slate-200 bg-white text-slate-700 
-                       focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-            <Send className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400" size={20} />
+          <div className="mt-4">
+            <p className="text-sm text-purple-700 font-medium">
+              Join 10,000+ students from top universities in India
+            </p>
+            <p className="text-xs text-slate-500">
+              Currently available in selected universities
+            </p>
           </div>
-
-          <button
-            className="w-full p-4 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg
-                     flex items-center justify-center gap-2 shadow-sm
-                     hover:from-blue-600 hover:to-indigo-600 
-                     active:transform active:scale-[0.98] transition-all
-                     disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-blue-500 disabled:hover:to-indigo-500"
-            onClick={simulateAnalysis}
-            disabled={!username || !platform || isAnalyzing}
-          >
-            {isAnalyzing ? (
-              <>
-                <Loader2 className="animate-spin" size={20} />
-                <span className="font-medium">Processing...</span>
-              </>
-            ) : (
-              <>
-                <span className="font-medium">Start Matching</span>
-                <ArrowRight size={20} />
-              </>
-            )}
-          </button>
         </div>
-
-        {/* Results Section */}
-        {matchResult && (
-          <div className="space-y-4">
-            <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-lg">
-              <div className="text-slate-700 text-sm flex items-center gap-2">
-                <CheckCircle size={18} className="text-blue-500" />
-                Check your DM for the questionnaire
-              </div>
-            </div>
-
-            <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 space-y-4">
-              <h2 className="text-lg font-medium text-slate-800">Next Steps</h2>
-              <div className="space-y-3">
-                {matchResult.steps.map((step, index) => (
-                  <div key={index} 
-                       className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-slate-50 to-blue-50">
-                    <div className="w-6 h-6 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-500 
-                                text-white flex items-center justify-center text-sm font-medium">
-                      {index + 1}
-                    </div>
-                    <span className="text-sm text-slate-700">{step}</span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="pt-3 border-t border-slate-100">
-                <p className="text-sm text-slate-600 text-center">
-                  Your perfect match is just a few steps away
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
 };
 
-export default SocialMediaMatching;
+export default UnivBoard;
