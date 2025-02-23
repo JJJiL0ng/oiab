@@ -11,30 +11,29 @@ const UnivBoard = () => {
 
   const handleStoreClick = async (store) => {
     try {
-      // 먼저 db가 제대로 초기화되었는지 확인
       if (!db) {
         console.error('Firebase DB가 초기화되지 않았습니다.');
         router.push('/sorry');
         return;
       }
 
-      const docRef = await addDoc(collection(db, "store_clicks"), {
+      setStoreClicked(store); // 즉시 UI 업데이트
+
+      // Firebase에 데이터 저장하고 바로 페이지 이동
+      await addDoc(collection(db, "store_clicks"), {
         storeType: store,
         timestamp: serverTimestamp(),
         createdAt: new Date().toISOString(),
-        userAgent: window.navigator.userAgent, // 추가적인 디버깅 정보
+        userAgent: window.navigator.userAgent,
       });
       
-      console.log(`${store} 스토어 클릭 기록 완료. 문서 ID: ${docRef.id}`);
-      setStoreClicked(store);
-      
-      // 성공적으로 저장된 후 리다이렉트
+      // 지연 시간을 500ms로 줄임
       setTimeout(() => {
         router.push('/sorry');
-      }, 1500);
+      }, 500);
+      
     } catch (error) {
       console.error(`${store} 스토어 클릭 기록 중 오류:`, error);
-      // 에러 발생 시에도 사용자 경험을 위해 리다이렉트
       router.push('/sorry');
     }
   };
