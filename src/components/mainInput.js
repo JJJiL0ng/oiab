@@ -21,17 +21,20 @@ const UnivBoard = () => {
       const docRef = await addDoc(collection(db, "store_clicks"), {
         storeType: store,
         timestamp: serverTimestamp(),
-        createdAt: new Date().toISOString() // 클라이언트 시간도 함께 저장
+        createdAt: new Date().toISOString(),
+        userAgent: window.navigator.userAgent, // 추가적인 디버깅 정보
       });
       
       console.log(`${store} 스토어 클릭 기록 완료. 문서 ID: ${docRef.id}`);
       setStoreClicked(store);
       
+      // 성공적으로 저장된 후 리다이렉트
       setTimeout(() => {
         router.push('/sorry');
       }, 1500);
     } catch (error) {
       console.error(`${store} 스토어 클릭 기록 중 오류:`, error);
+      // 에러 발생 시에도 사용자 경험을 위해 리다이렉트
       router.push('/sorry');
     }
   };
