@@ -3,10 +3,7 @@ import React, { useState } from 'react';
 import { Calendar, Users, Bell, BookOpen, Clock, Sparkles, ArrowRight, CheckCircle, School } from 'lucide-react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
-import { getFirestore } from 'firebase/firestore';
-import { app } from '../path/to/firebase-config'; // firebase 설정 파일 경로에 맞게 수정해주세요
-
-const db = getFirestore(app);
+import { db } from '../config/firebase'; // 수정된 import 경로
 
 const UnivBoard = () => {
   const router = useRouter();
