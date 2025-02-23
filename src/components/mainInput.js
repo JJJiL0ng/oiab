@@ -11,22 +11,27 @@ const UnivBoard = () => {
 
   const handleStoreClick = async (store) => {
     try {
-      // 파이어베이스에 클릭 이벤트 기록
+      // 먼저 db가 제대로 초기화되었는지 확인
+      if (!db) {
+        console.error('Firebase DB가 초기화되지 않았습니다.');
+        router.push('/sorry');
+        return;
+      }
+
       const docRef = await addDoc(collection(db, "store_clicks"), {
         storeType: store,
         timestamp: serverTimestamp(),
+        createdAt: new Date().toISOString() // 클라이언트 시간도 함께 저장
       });
       
       console.log(`${store} 스토어 클릭 기록 완료. 문서 ID: ${docRef.id}`);
       setStoreClicked(store);
       
-      // 1.5초 후 sorry 페이지로 이동
       setTimeout(() => {
         router.push('/sorry');
       }, 1500);
     } catch (error) {
       console.error(`${store} 스토어 클릭 기록 중 오류:`, error);
-      // 에러가 발생해도 sorry 페이지로 이동
       router.push('/sorry');
     }
   };
