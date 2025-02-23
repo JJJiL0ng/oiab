@@ -1,7 +1,7 @@
 'use client'
 import React, { useState } from 'react';
 import { Calendar, Users, Bell, BookOpen, Clock, Sparkles, ArrowRight, CheckCircle, School } from 'lucide-react';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useRouter } from 'next/navigation';
 
@@ -12,18 +12,20 @@ const UnivBoard = () => {
   const handleStoreClick = async (store) => {
     try {
       // 파이어베이스에 클릭 이벤트 기록
-      await addDoc(collection(db, "store_clicks"), {
-        store_type: store,
-        clicked_at: new Date().toISOString(),
-        user_timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+      const docRef = await addDoc(collection(db, "store_clicks"), {
+        storeType: store,
+        timestamp: serverTimestamp(),
       });
       
+      console.log(`${store} 스토어 클릭 기록 완료. 문서 ID: ${docRef.id}`);
       setStoreClicked(store);
+      
+      // 1.5초 후 sorry 페이지로 이동
       setTimeout(() => {
         router.push('/sorry');
       }, 1500);
     } catch (error) {
-      console.error("스토어 클릭 기록 중 오류 발생:", error);
+      console.error(`${store} 스토어 클릭 기록 중 오류:`, error);
       // 에러가 발생해도 sorry 페이지로 이동
       router.push('/sorry');
     }
