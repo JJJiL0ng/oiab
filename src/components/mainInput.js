@@ -18,7 +18,7 @@ const OneInABillion = () => {
     if (videoElement) {
       // 사전 로드된 작은 포스터 이미지 사용
       const posterImg = new Image();
-      posterImg.src = '/video_poster.jpg'; // 비디오의 첫 프레임을 저장한 작은 이미지
+      posterImg.src = '/video_poster.png'; // 비디오의 첫 프레임을 저장한 작은 이미지
       
       const handleCanPlay = () => {
         setVideoLoaded(true);
@@ -76,7 +76,7 @@ const OneInABillion = () => {
       {!videoLoaded && (
         <div className="absolute inset-0 bg-purple-100 flex items-center justify-center">
           <img 
-            src="/video_poster.jpg" 
+            src="/video_poster.png" 
             alt="Video thumbnail" 
             className="w-full h-full object-cover"
           />
