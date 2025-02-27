@@ -3,13 +3,13 @@ import React, { useState } from 'react';
 import { Calendar, Users, Bell, BookOpen, Clock, Sparkles, ArrowRight, CheckCircle, School } from 'lucide-react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
-import { db } from '../config/firebase'; // 수정된 import 경로
+import { db } from '../config/firebase';
 
-const UnivBoard = () => {
+const OneInABillion = () => {
   const router = useRouter();
   const [storeClicked, setStoreClicked] = useState('');
 
-  const handleStoreClick = async (store) => {
+  const handleStoreClick = React.useCallback(async (store) => {
     try {
       if (!db) {
         console.error('Firebase DB가 초기화되지 않았습니다.');
@@ -17,26 +17,76 @@ const UnivBoard = () => {
         return;
       }
 
-      setStoreClicked(store); // 즉시 UI 업데이트
-
-      // Firebase에 데이터 저장하고 바로 페이지 이동
-      await addDoc(collection(db, "store_clicks"), {
+      setStoreClicked(store);
+      
+      // 즉시 리다이렉션 시작
+      router.push('/sorry');
+      
+      // 백그라운드에서 Firebase에 데이터 저장 (결과를 기다리지 않음)
+      addDoc(collection(db, "store_clicks"), {
         storeType: store,
         timestamp: serverTimestamp(),
         createdAt: new Date().toISOString(),
         userAgent: window.navigator.userAgent,
+      }).catch(error => {
+        console.error(`${store} 스토어 클릭 기록 중 오류:`, error);
       });
-      
-      // 지연 시간을 500ms로 줄임
-      setTimeout(() => {
-        router.push('/sorry');
-      }, 500);
       
     } catch (error) {
       console.error(`${store} 스토어 클릭 기록 중 오류:`, error);
       router.push('/sorry');
     }
-  };
+  }, [router]);
+
+  const videoElement = React.useMemo(() => (
+    <div className="relative w-full max-w-[300px] h-[500px] mx-auto rounded-xl overflow-hidden shadow-md my-4">
+      <video 
+        className="absolute w-full h-full object-cover"
+        autoPlay 
+        loop 
+        muted 
+        playsInline
+        loading="lazy"
+      >
+        <source src="/background_video.webm" type="video/webm" />
+        브라우저가 비디오를 지원하지 않습니다.
+      </video>
+      <div className="absolute inset-0 bg-gradient-to-t from-purple-900/60 to-transparent flex items-end justify-center pb-6">
+        <h3 className="text-white text-xl font-bold text-shadow">find your &quot;the one&quot;</h3>
+      </div>
+    </div>
+  ), []);
+
+  const storeButtons = React.useMemo(() => (
+    <div className="flex flex-wrap justify-center gap-3">
+      <button 
+        onClick={() => handleStoreClick('ios')}
+        className="h-10 sm:h-12 transition-transform hover:scale-105"
+      >
+        <img 
+          src="/app-store-badge.png" 
+          alt="Download on App Store" 
+          className="h-full"
+          loading="lazy"
+          width="120"
+          height="40"
+        />
+      </button>
+      <button 
+        onClick={() => handleStoreClick('android')}
+        className="h-10 sm:h-12 transition-transform hover:scale-105"
+      >
+        <img 
+          src="/google-play-badge.png" 
+          alt="Get it on Google Play" 
+          className="h-full"
+          loading="lazy"
+          width="135"
+          height="40"
+        />
+      </button>
+    </div>
+  ), [handleStoreClick]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white">
@@ -44,96 +94,24 @@ const UnivBoard = () => {
         {/* 헤더 섹션 */}
         <div className="text-center space-y-3">
           <h1 className="text-3xl font-bold text-purple-800 flex items-center justify-center gap-2">
-            <School className="text-purple-600" size={32} />
-            UnivBoard
+            One In A Billion
           </h1>
-          
-          {/* 시간표 마법사 배너 */}
-          <div className="bg-gradient-to-r from-purple-100 to-indigo-100 p-4 rounded-xl shadow-sm">
-            <h2 className="text-xl font-semibold text-purple-900 mb-2">
-              Create Your Perfect Timetable
-            </h2>
-            <p className="text-purple-700 text-sm">
-              Smart AI-powered timetable wizard helps you build the best schedule
-            </p>
-          </div>
-
-          {/* 주요 기능 */}
-          <div className="bg-white p-4 rounded-xl shadow-sm border border-purple-100">
-            <div className="grid grid-cols-1 gap-3">
-              <div className="flex items-center gap-2 text-sm text-slate-700 bg-purple-50 p-3 rounded-lg">
-                <Calendar size={18} className="text-purple-500" />
-                <span>AI Timetable Optimization</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-slate-700 bg-purple-50 p-3 rounded-lg">
-                <Users size={18} className="text-purple-500" />
-                <span>Connect with Your Classmates</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-slate-700 bg-purple-50 p-3 rounded-lg">
-                <Bell size={18} className="text-purple-500" />
-                <span>Real-time Campus Updates</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-slate-700 bg-purple-50 p-3 rounded-lg">
-                <BookOpen size={18} className="text-purple-500" />
-                <span>Course Reviews & Materials</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-slate-700 bg-purple-50 p-3 rounded-lg">
-                <Clock size={18} className="text-purple-500" />
-                <span>Exam Schedule Tracker</span>
-              </div>
-            </div>
-          </div>
         </div>
 
+        {/* 메모이제이션된 비디오 컴포넌트 */}
+        {videoElement}
+
         {/* 하단 정보 */}
-        <div className="text-center space-y-4">
-          {/* 다운로드 문구 */}
-          <div className="space-y-2">
-            <h3 className="text-xl font-semibold text-purple-800">
-              Download UnivBoard Now
-            </h3>
-            <p className="text-sm text-slate-600">
-              Get started with your smart university life
-            </p>
-          </div>
-
-          {/* 앱 설치 버튼 */}
-          <div className="flex justify-center gap-4">
-            <button 
-              onClick={() => handleStoreClick('ios')}
-              className="h-12 transition-transform hover:scale-105"
-            >
-              <img 
-                src="/app-store-badge.png" 
-                alt="Download on App Store" 
-                className="h-full"
-              />
-            </button>
-            <button 
-              onClick={() => handleStoreClick('android')}
-              className="h-12 transition-transform hover:scale-105"
-            >
-              <img 
-                src="/google-play-badge.png" 
-                alt="Get it on Google Play" 
-                className="h-full"
-              />
-            </button>
-          </div>
+        <div className="text-center space-y-3 mt-2">
+          {/* 메모이제이션된 앱 스토어 버튼 */}
+          {storeButtons}
           
-          {storeClicked && (
-            <p className="text-sm text-green-600 animate-fade-in">
-              <CheckCircle className="inline-block mr-1" size={16} />
-              Thanks for your interest! Downloading will start shortly.
-            </p>
-          )}
-
-          <div className="mt-4">
+          <div className="mt-2">
             <p className="text-sm text-purple-700 font-medium">
-              Join 10,000+ students from top universities in India
+              already 1000+ users
             </p>
             <p className="text-xs text-slate-500">
-              Currently available in selected universities
+              get started now
             </p>
           </div>
         </div>
@@ -142,4 +120,4 @@ const UnivBoard = () => {
   );
 };
 
-export default UnivBoard;
+export default React.memo(OneInABillion);
