@@ -16,28 +16,17 @@ const OneInABillion = () => {
     const videoElement = videoRef.current;
     
     if (videoElement) {
-      // 사전 로드된 작은 포스터 이미지 사용
-      const posterImg = new Image();
-      posterImg.src = '/video_poster.png'; // 비디오의 첫 프레임을 저장한 작은 이미지
-      
       const handleCanPlay = () => {
         setVideoLoaded(true);
       };
       
       videoElement.addEventListener('canplay', handleCanPlay);
       
-      // 브라우저가 사전 로드 힌트를 인식하도록 설정
-      const linkElement = document.createElement('link');
-      linkElement.rel = 'preload';
-      linkElement.as = 'video';
-      linkElement.href = '/background_video_optimized.mp4'; // 최적화된 비디오 파일
-      document.head.appendChild(linkElement);
+      // 비디오 미리 로드
+      videoElement.load();
       
       return () => {
         videoElement.removeEventListener('canplay', handleCanPlay);
-        if (document.head.contains(linkElement)) {
-          document.head.removeChild(linkElement);
-        }
       };
     }
   }, []);
@@ -89,12 +78,11 @@ const OneInABillion = () => {
         loop 
         muted 
         playsInline
-        preload="metadata"
+        preload="auto"
         poster="/video_poster.png"
       >
-        {/* WebM 포맷이 더 효율적이므로 먼저 제공 */}
-        <source src="/background_video_optimized.webm" type="video/webm" />
-        <source src="/background_video_optimized.mp4" type="video/mp4" />
+        <source src="/background_video.webm" type="video/webm" />
+        <source src="/background_video.mp4" type="video/mp4" />
         브라우저가 비디오를 지원하지 않습니다.
       </video>
       <div className="absolute inset-0 bg-gradient-to-t from-purple-900/60 to-transparent flex items-end justify-center pb-6">
