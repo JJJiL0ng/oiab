@@ -90,7 +90,7 @@ const OneInABillion = () => {
         muted 
         playsInline
         preload="metadata"
-        poster="/video_poster.jpg"
+        poster="/video_poster.png"
       >
         {/* WebM 포맷이 더 효율적이므로 먼저 제공 */}
         <source src="/background_video_optimized.webm" type="video/webm" />
