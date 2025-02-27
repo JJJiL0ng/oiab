@@ -47,8 +47,10 @@ const OneInABillion = () => {
         muted 
         playsInline
         loading="lazy"
+        preload="auto"
       >
         <source src="/background_video.webm" type="video/webm" />
+        <source src="/background_video.mp4" type="video/mp4" />
         브라우저가 비디오를 지원하지 않습니다.
       </video>
       <div className="absolute inset-0 bg-gradient-to-t from-purple-900/60 to-transparent flex items-end justify-center pb-6">
