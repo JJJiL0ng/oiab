@@ -58,31 +58,31 @@ const ClientSideActions = () => {
         
         <div className="text-center mt-3">
           <p className="text-purple-800 font-medium mb-2">Download now:</p>
-          <div className="flex justify-center gap-2">
+          <div className="flex flex-col items-center gap-3">
             <button 
               onClick={() => handleStoreClick('ios')}
-              className="h-8 transition-transform hover:scale-105"
+              className="h-12 transition-transform hover:scale-105"
             >
               <img 
                 src="/app-store-badge.png" 
                 alt="Download on App Store" 
                 className="h-full"
                 loading="lazy"
-                width="100"
-                height="30"
+                width="300"
+                height="90"
               />
             </button>
             <button 
               onClick={() => handleStoreClick('android')}
-              className="h-8 transition-transform hover:scale-105"
+              className="h-12 transition-transform hover:scale-105"
             >
               <img 
                 src="/google-play-badge.png" 
                 alt="Get it on Google Play" 
                 className="h-full"
                 loading="lazy"
-                width="110"
-                height="30"
+                width="300"
+                height="90"
               />
             </button>
           </div>
